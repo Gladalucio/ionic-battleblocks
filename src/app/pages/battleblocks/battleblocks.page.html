@@ -1,0 +1,175 @@
+<ion-content>
+  <h1 class="ion-text-center spaced-text">Battleblocks</h1>
+  <ion-grid id="outer-grid">
+    <ion-row>
+      <!-- Player A-->
+      <ion-col size="12" size-lg="6" size-xl="4" offset-xl="2" id="player-a-wrapper">
+        <ion-grid>
+          <!-- Normal View -->
+          <ion-row>
+            <ion-col *ngFor="let block of playerA.Field; let playerAIndex = index;" size="1.2" class="ion-text-center">
+              <!-- Ship Placement Block -->
+              <ion-thumbnail
+              *ngIf="playerA.IsPlacing"
+              (click)="playerA.handlePlaceShipClick(block)"
+              [ngClass]="block.CanHoldShip ? 'place-ship-direction-overlay' : 'place-ship-empty'"
+              [hidden]="block.Ship !== null">
+              </ion-thumbnail>
+              <!-- Game Block -->
+              <ion-thumbnail
+              *ngIf="!playerA.IsPlacing"
+              [style.background]="block.Ship === null ? block.Color : 'white'">
+              <!-- (click)="playerA.click(block, gameStarted)" -->
+              </ion-thumbnail>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+      <!-- Player B-->
+      <ion-col size="12" size-lg="6" size-xl="4" id="player-b-wrapper">
+        <ion-grid>
+          <ion-row>
+            <ion-col *ngFor="let block of playerB.Field; let playerBIndex = index;" size="1.2" class="ion-text-center">
+              <!-- Ship Placement Block -->
+              <!-- Game Block -->
+              <ion-thumbnail
+              (click)="playerB.click(block, gameStarted)"
+              [style.background]="block.Ship !== null && playerB.ShowPlacedShips ? 'white' : block.Color"
+              >
+              <!-- [style.background]="block.Color" -->
+              </ion-thumbnail>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <!-- Place Ships -->
+      <ion-col offset-xl="2" size-xl="1.6">
+        <ion-button (click)="playerA.ShowAllPlacableShips" class="top-left-button" size="small" [color]="playerA.ShowAllPlacableShips ? 'danger' : 'primary'">
+          <ion-icon [name]="playerA.ShowAllPlacableShips ? 'remove' : 'add'"></ion-icon>
+        </ion-button>
+        <h4 class="ion-text-center">Your Ships</h4>
+        <ion-row *ngFor="let ship of playerA.PlacableShips">
+          <ion-col [hidden]="playerA.ShowAllPlacableShips === true || ship.Amount > 0 ? false : true">
+            <ion-button
+            [color]="ship.ButtonColor"
+            (click)="playerA.handlePlaceShipButtons(ship)"
+            expand="block"
+            [disabled]="ship.Amount < 1">
+              {{ ship.Type }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+      <!-- Player A Scores -->
+      <ion-col size-xl="1.6">
+        <h2 class="ion-text-center">Player A</h2>
+        <ion-item>
+          <h4>Hits:</h4>
+          <h4 slot="end">{{ playerA.Score.Hits }} </h4>
+        </ion-item>
+        <ion-item>
+          <h4>Misses:</h4>
+          <h4 slot="end">{{ playerA.Score.Misses }}</h4>
+        </ion-item>
+        <ion-item *ngIf="playerA.Score.Streak > 0">
+          <h4>Streak:</h4>
+          <h4 slot="end">{{ playerA.Score.Streak }}</h4>
+        </ion-item>
+        <ion-item *ngIf="playerA.Score.HighestStreak > 0">
+          <h4>Highest Streak:</h4>
+          <h4 slot="end">{{ playerA.Score.HighestStreak }}</h4>
+        </ion-item>
+      </ion-col>
+      <!-- Start / Reset Game -->
+      <ion-col size-xl="1.6" class="ion-text-center ion-no-margin ion-no-padding">
+        <ion-row>
+          <ion-col>
+            <h2>{{ gameStarted ? "Game started!" : "Game not started" }}</h2>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="!gameStarted">
+          <ion-col>
+            <ion-button
+            (click)="startGame()"
+            color="primary"
+            size="large"
+            [disabled]="!getGameCanStart">
+              Start Game
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="gameStarted">
+          <ion-col>
+            <ion-button
+            (click)="stopGame()"
+            color="danger"
+            size="large">
+              Stop Game
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <!-- For development only! -->
+        <ion-row>
+          <ion-col>
+            <ion-button
+            (click)="playerB.ShowPlacedShips = !playerB.ShowPlacedShips"
+            [color]="playerB.ShowPlacedShips ? 'success' : 'danger'">
+              {{ playerB.ShowPlacedShips ? 'Hide' : 'Show' }} Enemies
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <!-- End For development only! -->
+        <ion-row *ngIf="!gameStarted && getCanResetShips">
+          <ion-col>
+            <ion-button
+            (click)="resetGame()"
+            color="danger">
+              Reset
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+      <!-- Player B Scores -->
+      <ion-col size-xl="1.6">
+        <h2 class="ion-text-center">Player B</h2>
+        <ion-item>
+          <h4>Hits:</h4>
+          <h4 slot="end">{{ playerB.Score.Hits }} </h4>
+        </ion-item>
+        <ion-item>
+          <h4>Misses:</h4>
+          <h4 slot="end">{{ playerB.Score.Misses }}</h4>
+        </ion-item>
+        <ion-item *ngIf="playerB.Score.Streak > 0">
+          <h4>Streak:</h4>
+          <h4 slot="end">{{ playerB.Score.Streak }}</h4>
+        </ion-item>
+        <ion-item *ngIf="playerB.Score.HighestStreak > 0">
+          <h4>Highest Streak:</h4>
+          <h4 slot="end">{{ playerB.Score.HighestStreak }}</h4>
+        </ion-item>
+      </ion-col>
+      <!-- Settings -->
+      <ion-col size-xl="1.6">
+        <ion-button (click)="settings.toggleVisibility()" class="top-left-button" size="small" [color]="settings.Visible ? 'danger' : 'primary'">
+          <ion-icon [name]="settings.Visible ? 'remove' : 'add'"></ion-icon>
+        </ion-button>
+        <h2 class="ion-text-center">Settings</h2>
+        <div *ngIf="settings.Visible"  class="ion-text-center">
+          <span>( place settings here )</span>
+        </div>
+      </ion-col>
+    </ion-row>
+    <!-- Dummy buttons -->
+    <ion-row>
+      <ion-col offset="5.5">
+        <hr>
+        <ion-button (click)="dummyClick()">Dummy Button</ion-button>
+        <hr>
+      </ion-col>
+    </ion-row>
+    <!-- End of Dummy buttons -->
+  </ion-grid>
+</ion-content>

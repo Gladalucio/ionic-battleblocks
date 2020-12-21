@@ -1,0 +1,30 @@
+.spaced-text {
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.place-ship-empty {
+  background-color: lime;
+}
+
+.place-ship-direction-overlay {
+  background-color: white;
+}
+
+.top-left-button {
+  position: absolute;
+  top: 20;
+  right: 0;
+}
+
+ion-thumbnail {
+  display: inline-block;
+}
+
+#player-a-wrapper {
+  border-right: 1px solid white;
+}
+
+#player-b-wrapper {
+  border-left: 1px solid white;
+}
